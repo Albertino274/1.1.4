@@ -11,14 +11,15 @@ public class Util {
     private static final String USER = "root";
     private static final String PASSWORD = "root1";
 
-    public static Connection getConnection() throws ClassNotFoundException, SQLException {
-        Connection conn = null;
+    static {
         try {
-            Class.forName(DRIVER);
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            Class.forName(DRIVER); // Загрузка драйвера при инициализации класса
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Драйвер базы данных не найден", e);
         }
-        return conn;
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
