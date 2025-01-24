@@ -19,7 +19,6 @@ public class User {
     private Byte age;
 
     public User() {
-
     }
 
     public User(Long id, String name, String lastName, Byte age) {
@@ -28,7 +27,6 @@ public class User {
         this.lastName = lastName;
         this.age = age;
     }
-
 
     public Long getId() {
         return id;
