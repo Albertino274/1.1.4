@@ -14,7 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try {
             // Инициализация соединения при создании объекта
             connection = Util.getConnection();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException("Ошибка при подключении к базе данных", e);
         }
     }
