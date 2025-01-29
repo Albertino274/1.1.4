@@ -9,20 +9,22 @@ import org.hibernate.query.Query;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+    private final Session session;
 
     public UserDaoHibernateImpl() {
+        this.session = Util.getSessionFactory().openSession();
     }
 
     @Override
     public void createUsersTable() {
-        String query = "CREATE TABLE IF NOT EXISTS Users (" +
+        String query = "CREATE TABLE IF NOT EXISTS users (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(30), " +
                 "lastName VARCHAR(30), " +
                 "age TINYINT)";
-        try (Session session = Util.getSessionFactory().openSession()) {
+        try {
             Transaction transaction = session.beginTransaction();
-            session.createSQLQuery(query).executeUpdate(); // Используем native SQL через Hibernate
+            session.createSQLQuery(query).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при создании таблицы", e);
@@ -31,10 +33,10 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        String query = "DROP TABLE IF EXISTS Users";
-        try (Session session = Util.getSessionFactory().openSession()) {
+        String query = "DROP TABLE IF EXISTS users";
+        try {
             Transaction transaction = session.beginTransaction();
-            session.createSQLQuery(query).executeUpdate(); // Выполняем SQL-запрос для удаления таблицы
+            session.createSQLQuery(query).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при удалении таблицы", e);
@@ -43,30 +45,29 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (Session session = Util.getSessionFactory().openSession()) {
-            session.beginTransaction();
+        try {
+            Transaction transaction = session.beginTransaction();
 
-            // Создание нового пользователя
             User user = new User();
             user.setName(name);
             user.setLastName(lastName);
             user.setAge(age);
 
-            // Сохранение пользователя
             session.save(user);
 
-            session.getTransaction().commit(); // Коммит транзакции
+            transaction.commit();
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при сохранении пользователя", e);
         }
     }
 
+    @Override
     public void removeUserById(long id) {
-        try (Session session = Util.getSessionFactory().openSession()) {
+        try {
             Transaction transaction = session.beginTransaction();
-            User user = session.get(User.class, id); // Получаем пользователя по ID
+            User user = session.get(User.class, id);
             if (user != null) {
-                session.delete(user); // Удаляем объект из базы данных
+                session.delete(user);
             }
             transaction.commit();
         } catch (Exception e) {
@@ -74,30 +75,25 @@ public class UserDaoHibernateImpl implements UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
-        List<User> users;
-        try (Session session = Util.getSessionFactory().openSession()) {
-            Query<User> query = session.createQuery("FROM User", User.class); // HQL-запрос для получения всех пользователей
-            users = query.getResultList(); // Получаем список пользователей
+        try {
+            Query<User> query = session.createQuery("FROM User", User.class);
+            return query.getResultList();
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при получении пользователей", e);
         }
-        return users;
     }
 
+    @Override
     public void cleanUsersTable() {
-        try (Session session = Util.getSessionFactory().openSession()) {
+        try {
             Transaction transaction = session.beginTransaction();
-            Query query = session.createQuery("DELETE FROM User"); // HQL-запрос для удаления всех пользователей
-            query.executeUpdate(); // Выполнение удаления
+            Query query = session.createQuery("DELETE FROM User");
+            query.executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при очистке таблицы", e);
         }
     }
 }
-
-
-
-
-

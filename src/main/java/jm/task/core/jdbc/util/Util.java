@@ -4,7 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import jm.task.core.jdbc.model.User;  // Импортируйте класс User, если он у вас есть
+import jm.task.core.jdbc.model.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
